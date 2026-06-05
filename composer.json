@@ -6,13 +6,6 @@
   "require-dev": {
     "phpunit/phpunit": "^10"
   },
-  "autoload": {
-    "files": [
-      "includes/db.php",
-      "includes/response.php",
-      "includes/validation.php"
-    ]
-  },
   "autoload-dev": {
     "psr-4": {
       "Tests\\": "tests/"
