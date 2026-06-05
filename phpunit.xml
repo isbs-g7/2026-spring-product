@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true">
+  <testsuites>
+    <testsuite name="Unit">
+      <directory>tests/Unit</directory>
+    </testsuite>
+    <testsuite name="Integration">
+      <directory>tests/Integration</directory>
+    </testsuite>
+  </testsuites>
+  <php>
+    <!-- テスト用DB接続情報（CI環境の環境変数から読む） -->
+    <env name="DB_DSN"  value="pgsql:host=localhost;dbname=event_board_test;port=5432"/>
+    <env name="DB_USER" value="ci_user"/>
+    <env name="DB_PASS" value="ci_pass"/>
+    <env name="ALLOWED_EMAIL_DOMAIN" value="test.ac.jp"/>
+  </php>
+</phpunit>
