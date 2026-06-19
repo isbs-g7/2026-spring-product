@@ -2,8 +2,6 @@
  * events.js — イベント一覧・検索・ページネーション（イベント制御）
  * 描画ロジックは event-render.js に委譲する
  */
-
-import { apiGet, ApiError } from './api.js';
 import {
     renderResultCount,
     renderEvents,

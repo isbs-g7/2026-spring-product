@@ -1,0 +1,14 @@
+<?php
+// config.php のテンプレート。
+// このファイルを config.php にコピーし、各自の環境に合わせて値を編集すること。
+// config.php は .gitignore で除外されているため、コミットしないこと。
+
+defined('DB_DSN')  || define('DB_DSN',  getenv('DB_DSN')  ?: 'pgsql:host=localhost;dbname=event_board;port=5432');
+defined('DB_USER') || define('DB_USER', getenv('DB_USER') ?: 'YOUR_DB_USER');
+defined('DB_PASS') || define('DB_PASS', getenv('DB_PASS') ?: 'YOUR_DB_PASS');
+
+// 大学メールのドメイン（@以降）。このドメイン以外は登録・ログインを拒否する
+defined('ALLOWED_EMAIL_DOMAIN') || define('ALLOWED_EMAIL_DOMAIN',
+    getenv('ALLOWED_EMAIL_DOMAIN') ?: 'stu.musashino-u.ac.jp');
+
+defined('APP_NAME') || define('APP_NAME', '大学イベント掲示板');

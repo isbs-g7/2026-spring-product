@@ -7,3 +7,9 @@ build/
 .venv/
 venv/
 __pycache__/
+
+# PHP設定ファイル（DB接続情報を含むため必須）
+config.php
+
+# PHPパッケージ
+vendor/
