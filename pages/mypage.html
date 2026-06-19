@@ -99,11 +99,37 @@
       </form>
     </section>
 
-    <!--
-      ===== 将来拡張エリア =====
-      主催イベント一覧・参加イベント一覧などをここに追加する。
-      js/mypage.js を別途作成してこのページから読み込む想定。
-    -->
+    <!-- 自分のイベント一覧 -->
+    <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-base font-semibold text-gray-700">自分のイベント</h2>
+        <a href="/pages/create-event.html"
+           class="text-sm text-indigo-600 hover:text-indigo-700 font-medium">
+          + 新規作成
+        </a>
+      </div>
+
+      <!-- ローディング -->
+      <div id="events-loading" class="text-center py-8">
+        <p class="text-gray-500 text-sm">読み込み中…</p>
+      </div>
+
+      <!-- エラー -->
+      <div id="events-error" class="hidden px-4 py-3 bg-red-50 border border-red-200
+                                    rounded-lg text-sm text-red-700"></div>
+
+      <!-- イベント一覧 -->
+      <div id="events-list" class="space-y-3"></div>
+
+      <!-- 空の状態 -->
+      <div id="events-empty" class="hidden text-center py-8">
+        <p class="text-gray-500 text-sm mb-2">まだイベントを作成していません</p>
+        <a href="/pages/create-event.html"
+           class="text-sm text-indigo-600 hover:text-indigo-700 font-medium">
+          イベントを作成する →
+        </a>
+      </div>
+    </section>
 
   </main>
 
@@ -157,6 +183,71 @@
           btn.textContent = '変更する';
         }
       });
+
+      // 自分のイベント一覧を取得
+      const loadUserEvents = async () => {
+        const loadingDiv = document.getElementById('events-loading');
+        const errorDiv   = document.getElementById('events-error');
+        const listDiv    = document.getElementById('events-list');
+        const emptyDiv   = document.getElementById('events-empty');
+
+        loadingDiv.classList.remove('hidden');
+        errorDiv.classList.add('hidden');
+        listDiv.innerHTML = '';
+        emptyDiv.classList.add('hidden');
+
+        try {
+          const res = await api.get('/api/users/events.php');
+          const events = res.events || [];
+
+          if (events.length === 0) {
+            loadingDiv.classList.add('hidden');
+            emptyDiv.classList.remove('hidden');
+            return;
+          }
+
+          // イベント一覧を表示
+          listDiv.innerHTML = events.map(event => {
+            const eventDate = new Date(event.event_date);
+            const statusBadge = {
+              'draft': '<span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded font-medium">下書き</span>',
+              'published': '<span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded font-medium">公開中</span>',
+              'cancelled': '<span class="px-2 py-1 bg-red-100 text-red-700 text-xs rounded font-medium">キャンセル</span>',
+              'completed': '<span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded font-medium">完了</span>',
+            }[event.status] || '';
+
+            return `
+              <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="flex-1">
+                    <h3 class="font-semibold text-gray-800 text-sm">${event.title}</h3>
+                    <p class="text-gray-600 text-xs mt-1 line-clamp-2">${event.description}</p>
+                    <div class="flex items-center gap-2 mt-2 text-xs text-gray-500">
+                      <span>📍 ${event.location}</span>
+                      <span>📅 ${eventDate.toLocaleDateString('ja-JP')}</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    ${statusBadge}
+                    <a href="/pages/event-detail.html?id=${event.id}"
+                       class="text-indigo-600 hover:text-indigo-700 text-xs font-medium">
+                      詳細 →
+                    </a>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+          loadingDiv.classList.add('hidden');
+        } catch (err) {
+          loadingDiv.classList.add('hidden');
+          errorDiv.textContent = err.message || 'イベント一覧の取得に失敗しました';
+          errorDiv.classList.remove('hidden');
+        }
+      };
+
+      await loadUserEvents();
     })();
   </script>
 </body>
