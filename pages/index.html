@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>イベント一覧 — 大学イベント掲示板</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+  <!-- ナビゲーション -->
+  <header class="bg-white shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
+      <a href="/pages/index.html" class="text-indigo-600 font-bold text-lg tracking-tight">
+        大学イベント掲示板
+      </a>
+      <nav id="main-nav" class="flex items-center gap-5 text-sm"></nav>
+    </div>
+  </header>
+
+  <!-- ヒーロー -->
+  <section class="bg-indigo-600 text-white py-14 px-4 text-center">
+    <h1 class="text-3xl font-bold mb-2">大学のイベントを探そう</h1>
+    <p class="text-indigo-200 text-sm mb-6">講演・サークル・交流会など、学内の様々なイベントを一か所に</p>
+    <a href="/pages/register.html" id="cta-register"
+       class="inline-block bg-white text-indigo-600 font-semibold px-6 py-2.5 rounded-lg
+              text-sm hover:bg-indigo-50 transition-colors">
+      無料で登録する
+    </a>
+  </section>
+
+  <!-- メインコンテンツ -->
+  <main class="flex-1 max-w-5xl mx-auto w-full px-4 py-10">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-xl font-bold text-gray-800">開催予定のイベント</h2>
+      <a href="/pages/event-new.html" id="create-btn"
+         class="hidden bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded-lg
+                hover:bg-indigo-700 transition-colors">
+        ＋ イベントを作成
+      </a>
+    </div>
+
+    <!--
+      ===== イベントカード一覧 =====
+      js/events.js が実装されたらここにカードを描画する。
+      現在は準備中メッセージを表示。
+    -->
+    <div id="events-container"
+         class="flex flex-col items-center justify-center py-20 text-gray-400 text-sm gap-2">
+      <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+      </svg>
+      <p>イベント一覧は準備中です</p>
+    </div>
+  </main>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script>
+    (async () => {
+      const user = await initAuth();
+
+      // ログイン中はCTAを「イベントを探す」に変え、作成ボタンを表示
+      if (user) {
+        const cta = document.getElementById('cta-register');
+        cta.href = '#events-container';
+        cta.textContent = 'イベントを探す';
+        document.getElementById('create-btn').classList.remove('hidden');
+      }
+    })();
+  </script>
+</body>
+</html>
