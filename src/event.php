@@ -28,18 +28,20 @@ class Event
     }
 
     /**
-     * イベント編集
+     * イベント編集（主催者のみ）
+     *
+     * @throws Exception 更新フィールドが空のとき
      */
-    public function update(string $eventId, array $data): bool
+    public function update(string $eventId, string $currentUserId, array $data): bool
     {
         $allowedFields = ['title', 'description', 'location', 'event_date', 'status'];
         $updates = [];
         $values = [];
 
-        foreach ($data as $key => $value) {
-            if (in_array($key, $allowedFields)) {
-                $updates[] = "$key = ?";
-                $values[] = $value;
+        foreach ($allowedFields as $field) {
+            if (array_key_exists($field, $data)) {
+                $updates[] = "$field = ?";
+                $values[] = $data[$field];
             }
         }
 
@@ -48,21 +50,24 @@ class Event
         }
 
         $values[] = $eventId;
-        $sql = 'UPDATE events SET ' . implode(', ', $updates) 
-             . ' WHERE id = ? AND deleted_at IS NULL';
-        
+        $values[] = $currentUserId;
+        $sql = 'UPDATE events SET ' . implode(', ', $updates)
+             . ' WHERE id = ? AND organizer_id = ? AND deleted_at IS NULL';
+
         $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute($values);
+        $stmt->execute($values);
+        return $stmt->rowCount() > 0;
     }
 
     /**
-     * イベント削除（ソフトデリート）
+     * イベント削除（ソフトデリート、主催者のみ）
      */
-    public function delete(string $eventId): bool
+    public function delete(string $eventId, string $currentUserId): bool
     {
         $stmt = $this->pdo->prepare(
-            'UPDATE events SET deleted_at = NOW() WHERE id = ? AND deleted_at IS NULL'
+            'UPDATE events SET deleted_at = NOW() WHERE id = ? AND organizer_id = ? AND deleted_at IS NULL'
         );
-        return $stmt->execute([$eventId]);
+        $stmt->execute([$eventId, $currentUserId]);
+        return $stmt->rowCount() > 0;
     }
 }
