@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>イベント作成 - 大学生活イベント掲示板</title>
+    <!-- Tailwind CSS (CDN) を読み込み。設計書通りのSPAなし通常のHTTP遷移構成 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen">
+
+    <!-- 共通ヘッダー（ログイン状態に応じて表示切り替えをjs/auth.jsで行う想定） -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="index.html" class="text-xl font-bold text-indigo-600">大学生活イベント掲示板</a>
+            <nav class="space-x-4">
+                <a href="mypage.html" class="text-sm text-gray-600 hover:text-indigo-600">マイページ</a>
+                <a href="index.html" class="text-sm text-gray-600 hover:text-indigo-600">イベント一覧</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-2xl mx-auto px-4 py-8">
+        <div class="bg-white shadow-sm rounded-lg p-6 border border-gray-200">
+            <h1 class="text-2xl font-bold text-gray-900 mb-6 pb-2 border-b border-gray-100">新規イベント作成</h1>
+            
+            <!-- エラー・成功メッセージ表示用エリア -->
+            <div id="message-container" class="hidden mb-4 p-4 rounded-md text-sm"></div>
+
+            <!-- イベント作成フォーム -->
+            <form id="event-create-form" class="space-y-5">
+                
+                <!-- タイトル -->
+                <div>
+                    <label for="title" class="block text-sm font-medium text-gray-700 mb-1">イベント名 <span class="text-red-500">*</span></label>
+                    <input type="text" id="title" name="title" required maxlength="100"
+                        class="w-full rounded-md border-gray-300 shadow-sm border p-2 focus:border-indigo-500 focus:ring-indigo-500"
+                        placeholder="例: 新入生歓迎バーベキュー">
+                    <p class="mt-1 text-xs text-gray-500 text-right"><span id="title-counter">0</span>/100文字</p>
+                </div>
+
+                <!-- カテゴリ -->
+                <div>
+                    <label for="category_id" class="block text-sm font-medium text-gray-700 mb-1">カテゴリ <span class="text-red-500">*</span></label>
+                    <select id="category_id" name="category_id" required
+                        class="w-full rounded-md border-gray-300 shadow-sm border p-2 focus:border-indigo-500 focus:ring-indigo-500 bg-white">
+                        <option value="">カテゴリを選択してください</option>
+                        <!-- js/events.js または初期化処理で api/categories/index.php から動的取得して挿入する構造を想定 -->
+                    </select>
+                </div>
+
+                <!-- 開催日時 & 終了日時 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="event_date" class="block text-sm font-medium text-gray-700 mb-1">開催日時 <span class="text-red-500">*</span></label>
+                        <input type="datetime-local" id="event_date" name="event_date" required
+                            class="w-full rounded-md border-gray-300 shadow-sm border p-2 focus:border-indigo-500 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label for="end_date" class="block text-sm font-medium text-gray-700 mb-1">終了日時</label>
+                        <input type="datetime-local" id="end_date" name="end_date"
+                            class="w-full rounded-md border-gray-300 shadow-sm border p-2 focus:border-indigo-500 focus:ring-indigo-500">
+                    </div>
+                </div>
+
+                <!-- 開催場所 & オンラインフラグ -->
+                <div>
+                    <label for="location" class="block text-sm font-medium text-gray-700 mb-1">開催場所 <span class="text-red-500">*</span></label>
+                    <input type="text" id="location" name="location" required maxlength="200"
+                        class="w-full rounded-md border-gray-300 shadow-sm border p-2 focus:border-indigo-500 focus:ring-indigo-500"
+                        placeholder="例: 第1学生食堂、またはZoom URLなど">
+                    
+                    <div class="mt-2 flex items-center">
+                        <input type="checkbox" id="is_online" name="is_online"
+                            class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                        <label for="is_online" class="ml-2 text-sm text-gray-600">オンライン開催の場合はチェックを入れる</label>
+                    </div>
+                </div>
+
+                <!-- 定員 -->
+                <div>
+                    <label for="max_participants" class="block text-sm font-medium text-gray-700 mb-1">定員（人数制限がある場合）</label>
+                    <input type="number" id="max_participants" name="max_participants" min="1"
+                        class="w-full rounded-md border-gray-300 shadow-sm border p-2 focus:border-indigo-500 focus:ring-indigo-500"
+                        placeholder="例: 30 (空欄の場合は定員なし)">
+                </div>
+
+                <!-- 画像URL -->
+                <div>
+                    <label for="image_url" class="block text-sm font-medium text-gray-700 mb-1">イベント画像URL（任意）</label>
+                    <input type="url" id="image_url" name="image_url" maxlength="500"
+                        class="w-full rounded-md border-gray-300 shadow-sm border p-2 focus:border-indigo-500 focus:ring-indigo-500"
+                        placeholder="https://example.com/image.jpg">
+                </div>
+
+                <!-- 説明文 -->
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-1">イベント詳細説明 <span class="text-red-500">*</span></label>
+                    <textarea id="description" name="description" required rows="6"
+                        class="w-full rounded-md border-gray-300 shadow-sm border p-2 focus:border-indigo-500 focus:ring-indigo-500"
+                        placeholder="イベントの趣旨、持ち物、タイムスケジュールなどを詳しく記入してください。"></textarea>
+                </div>
+
+                <!-- ボタンエリア -->
+                <div class="flex justify-end space-x-3 pt-4 border-t border-gray-100">
+                    <a href="index.html" 
+                        class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        キャンセル
+                    </a>
+                    <button type="submit" id="submit-btn"
+                        class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        イベントを公開する
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- 設計書記載のJS構成に基づき、共通API呼び出し用とイベントロジック用のスクリプトを読み込み -->
+    <!-- ※他メンバー作成の js/api.js, js/auth.js と連携して動く形になります -->
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/events.js"></script>
+    <script>
+        // 文字数カウンターの簡易スクリプト
+        const titleInput = document.getElementById('title');
+        const titleCounter = document.getElementById('title-counter');
+        titleInput.addEventListener('input', () => {
+            titleCounter.textContent = titleInput.value.length;
+        });
+    </script>
+</body>
+</html>
