@@ -1,4 +1,206 @@
-/* Tailwind CDN では対応しにくいスタイルのみここに追記する */
+/* custom.css — Tailwindで対応できないスタイルのみ記述 */
+
+/* ---- イベントカード ---- */
+.event-card {
+    display: block;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    text-decoration: none;
+    color: inherit;
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.event-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: #c7d2fe;
+}
+
+.event-card__header {
+    margin-bottom: 8px;
+}
+
+.event-card__title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #111827;
+    line-height: 1.5;
+    margin-bottom: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.event-card__meta {
+    font-size: 12px;
+    color: #6b7280;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.event-card__meta .ti {
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+.event-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #f3f4f6;
+}
+
+.event-card__participants {
+    font-size: 12px;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* ---- 検索セクションラベル ---- */
+.search-section-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed #e5e7eb;
+}
+.search-section-label .ti {
+    font-size: 14px;
+}
+
+/* ---- カテゴリ絞り込みボタン ---- */
+.category-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 18px;
+    font-size: 13px;
+    color: #374151;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+.category-filter-btn:hover {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+}
+.category-filter-btn--active {
+    background: #111827;
+    color: #ffffff;
+    border-color: #111827;
+}
+.category-filter-btn--active:hover {
+    background: #1f2937;
+    border-color: #1f2937;
+}
+
+/* ---- キーワード検索ボタン ---- */
+.search-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 24px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #ffffff;
+    background: #111827;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.12s;
+}
+.search-btn:hover {
+    background: #1f2937;
+}
+
+/* ---- カテゴリバッジ ---- */
+.category-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 999px;
+}
+
+/* ---- ステータスバッジ ---- */
+.status-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 999px;
+}
+.status-badge--open {
+    background: #dcfce7;
+    color: #166534;
+}
+.status-badge--few {
+    background: #fef9c3;
+    color: #854d0e;
+}
+.status-badge--full {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* ---- ページネーション ---- */
+.pagination__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    font-size: 13px;
+    color: #374151;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.1s, border-color 0.1s;
+}
+.pagination__btn:hover:not(:disabled) {
+    background: #f3f4f6;
+    border-color: #c7d2fe;
+}
+.pagination__btn--active {
+    background: #4f46e5;
+    color: #ffffff;
+    border-color: #4f46e5;
+    pointer-events: none;
+}
+.pagination__btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+.pagination__ellipsis {
+    font-size: 13px;
+    color: #9ca3af;
+    padding: 0 4px;
+}
+
+/* ---- 状態表示 ---- */
+.loading, .no-results, .error {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem 0;
+    font-size: 14px;
+    color: #6b7280;
+}
+.error {
+    color: #dc2626;
+}
 
 /* フォームオートフィル時の背景色をリセット */
 input:-webkit-autofill,

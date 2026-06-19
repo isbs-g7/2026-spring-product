@@ -1,20 +1,21 @@
 /**
- * APIリクエスト共通ラッパー。
- * CSRFトークンの自動付与・JSONパース・エラー処理を担う。
- * 使い方: api.get('/api/users/me.php')
- *          api.post('/api/auth/login.php', { email, password })
+ * api.js — fetch共通ラッパー
+ *
+ * 使い方:
+ *   const data = await apiGet('/api/events/search.php', { page: 1, keyword: 'test' });
+ *   const data = await apiPost('/api/auth/login.php', { email, password });
+ *   const data = await api.get('/api/users/me.php');
  */
 
 let _csrfToken = null;
 
 async function _fetchCsrfToken() {
-    const res = await fetch('/api/auth/csrf.php');
+    const res = await fetch('/api/auth/csrf.php', { credentials: 'same-origin' });
     if (!res.ok) throw new Error('CSRFトークンの取得に失敗しました');
     const data = await res.json();
     _csrfToken = data.csrf_token;
 }
 
-// me.php のレスポンスからトークンをセット（ログイン済み時は2回取得不要）
 function setCsrfToken(token) {
     _csrfToken = token;
 }
@@ -26,7 +27,10 @@ async function _request(url, options = {}) {
         await _fetchCsrfToken();
     }
 
-    const headers = { 'Content-Type': 'application/json' };
+    const headers = { 'Accept': 'application/json' };
+    if (method !== 'GET') {
+        headers['Content-Type'] = 'application/json';
+    }
     if (method !== 'GET' && _csrfToken) {
         headers['X-CSRF-Token'] = _csrfToken;
     }
@@ -41,20 +45,78 @@ async function _request(url, options = {}) {
     }
 
     const res = await fetch(url, fetchOptions);
+    return handleResponse(res);
+}
 
-    // 204 No Content など body が空の場合の対処
+/**
+ * GETリクエスト
+ * @param {string} path  - APIのパス（例: '/api/events/search.php'）
+ * @param {Object} params - クエリパラメータ（例: { page: 1, keyword: 'test' }）
+ * @returns {Promise<any>}
+ */
+async function apiGet(path, params = {}) {
+    const url = new URL(path, location.origin);
+    Object.entries(params).forEach(([key, value]) => {
+        if (value !== '' && value !== null && value !== undefined) {
+            url.searchParams.set(key, value);
+        }
+    });
+
+    return _request(url.toString(), { method: 'GET' });
+}
+
+/**
+ * POSTリクエスト（JSON body）
+ * @param {string} path  - APIのパス
+ * @param {Object} body  - リクエストボディ
+ * @returns {Promise<any>}
+ */
+async function apiPost(path, body = {}) {
+    return _request(path, { method: 'POST', body });
+}
+
+/**
+ * レスポンス共通処理
+ * @param {Response} res
+ * @returns {Promise<any>}
+ */
+async function handleResponse(res) {
     const text = await res.text();
     const data = text ? JSON.parse(text) : null;
 
     if (!res.ok) {
-        const message = data?.error || `エラー (${res.status})`;
-        throw Object.assign(new Error(message), { status: res.status, data });
+        const message = data?.error ?? `HTTPエラー: ${res.status}`;
+        throw new ApiError(message, res.status);
     }
 
     return data;
 }
 
-const api = {
-    get:  (url)         => _request(url, { method: 'GET' }),
-    post: (url, body)   => _request(url, { method: 'POST', body }),
+/**
+ * CSRFトークンをmetaタグから取得
+ * <meta name="csrf-token" content="..."> が必要
+ */
+function getCsrfToken() {
+    return document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+}
+
+var ApiError = class ApiError extends Error {
+    constructor(message, status) {
+        super(message);
+        this.name = 'ApiError';
+        this.status = status;
+    }
 };
+
+var api = {
+    get: (url) => apiGet(url),
+    post: (url, body) => apiPost(url, body),
+};
+
+if (typeof window !== 'undefined') {
+    window.apiGet = apiGet;
+    window.apiPost = apiPost;
+    window.api = api;
+    window.ApiError = ApiError;
+    window.setCsrfToken = setCsrfToken;
+}
