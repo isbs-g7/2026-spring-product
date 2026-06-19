@@ -1,7 +1,5 @@
 <?php
 
-require_once __DIR__ . '/../config.php';
-
 function validate_email_domain(string $email): bool {
     $atPos = strrpos($email, '@');
     if ($atPos === false) {

@@ -12,6 +12,9 @@ class ValidationTest extends TestCase
     {
         // validate_csrf() は error_response() (exit) を呼ぶため、
         // ここでは validate_email_domain / validate_password のみテストする
+        if (!defined('ALLOWED_EMAIL_DOMAIN')) {
+            define('ALLOWED_EMAIL_DOMAIN', 'test.ac.jp');
+        }
         require_once __DIR__ . '/../../includes/validation.php';
     }
 
