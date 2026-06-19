@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>イベント一覧</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+    <div class="max-w-6xl mx-auto p-6">
+
+        <h1 class="text-3xl font-bold mb-6">
+            大学生活イベント掲示板
+        </h1>
+
+        <div class="bg-white rounded-lg shadow p-4 mb-6">
+            <div class="grid md:grid-cols-4 gap-4">
+
+                <input
+                    type="text"
+                    id="keyword"
+                    placeholder="キーワード検索"
+                    class="border rounded p-2"
+                >
+
+                <select
+                    id="category"
+                    class="border rounded p-2"
+                >
+                    <option value="">全カテゴリ</option>
+                </select>
+
+                <input
+                    type="date"
+                    id="from"
+                    class="border rounded p-2"
+                >
+
+                <input
+                    type="date"
+                    id="to"
+                    class="border rounded p-2"
+                >
+            </div>
+
+            <button
+                id="searchBtn"
+                class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+                検索
+            </button>
+        </div>
+
+        <div
+            id="eventsContainer"
+            class="grid md:grid-cols-2 lg:grid-cols-3 gap-4"
+        ></div>
+
+        <div
+            id="pagination"
+            class="flex justify-center gap-2 mt-8"
+        ></div>
+
+    </div>
+
+    <script src="../js/events.js"></script>
+
+</body>
+</html>
