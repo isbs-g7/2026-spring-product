@@ -1,19 +1,27 @@
 const categorySelect = document.getElementById('category');
 const eventsContainer = document.getElementById('eventsContainer');
 const pagination = document.getElementById('pagination');
-const searchBtn = document.getElementById('searchBtn');
 
 let currentPage = 1;
 
 document.addEventListener('DOMContentLoaded', async () => {
+    document.getElementById('searchBtn').addEventListener('click', () => {
+        currentPage = 1;
+        loadEvents();
+    });
+
     await loadCategories();
     await loadEvents();
 });
 
-searchBtn.addEventListener('click', () => {
-    currentPage = 1;
-    loadEvents();
-});
+function escapeHtml(str) {
+    return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
 
 async function loadCategories() {
     try {
@@ -101,14 +109,14 @@ function renderEvents(events) {
         card.innerHTML = `
             <div class="flex justify-between items-center mb-2">
                 <h2 class="font-bold text-lg">
-                    ${event.title}
+                    ${escapeHtml(event.title)}
                 </h2>
 
                 <span
                     class="text-white text-xs px-2 py-1 rounded"
-                    style="background:${event.category_color}"
+                    style="background:${escapeHtml(event.category_color)}"
                 >
-                    ${event.category_name}
+                    ${escapeHtml(event.category_name)}
                 </span>
             </div>
 
@@ -117,20 +125,20 @@ function renderEvents(events) {
             </p>
 
             <p class="text-sm text-gray-600 mb-2">
-                📍 ${event.location}
+                📍 ${escapeHtml(event.location)}
             </p>
 
             <p class="text-sm text-gray-600 mb-3">
                 定員:
-                ${event.max_participants ?? '制限なし'}
+                ${event.max_participants != null ? escapeHtml(event.max_participants) : '制限なし'}
             </p>
 
             <p class="text-gray-700 flex-grow">
-                ${description}
+                ${escapeHtml(description)}
             </p>
 
             <a
-                href="event-detail.html?id=${event.id}"
+                href="event-detail.html?id=${encodeURIComponent(event.id)}"
                 class="mt-4 text-blue-600 hover:underline"
             >
                 詳細を見る

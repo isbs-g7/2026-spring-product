@@ -24,15 +24,22 @@ try {
 
     if (!empty($_GET['keyword'])) {
         $conditions[] = '(e.title ILIKE :keyword OR e.description ILIKE :keyword)';
-        $params['keyword'] = '%' . $_GET['keyword'] . '%';
+        $escaped = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $_GET['keyword']);
+        $params['keyword'] = '%' . $escaped . '%';
     }
 
     if (!empty($_GET['from'])) {
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $_GET['from']) || !strtotime($_GET['from'])) {
+            error_response('fromの日付形式が不正です', 400);
+        }
         $conditions[] = 'e.event_date >= :from';
         $params['from'] = $_GET['from'];
     }
 
     if (!empty($_GET['to'])) {
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $_GET['to']) || !strtotime($_GET['to'])) {
+            error_response('toの日付形式が不正です', 400);
+        }
         $conditions[] = 'e.event_date <= :to';
         $params['to'] = $_GET['to'] . ' 23:59:59';
     }
