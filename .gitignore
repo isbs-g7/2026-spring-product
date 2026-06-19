@@ -2,3 +2,18 @@ config.php
 vendor/
 .env
 .DS_Store
+node_modules/
+dist/
+build/
+.env
+.DS_Store
+*.log
+.venv/
+venv/
+__pycache__/
+
+# PHP設定ファイル（DB接続情報を含むため必須）
+config.php
+
+# PHPパッケージ
+vendor/

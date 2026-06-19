@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>新規登録 — 大学イベント掲示板</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+  <!-- ナビゲーション -->
+  <header class="bg-white shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
+      <a href="/pages/index.html" class="text-indigo-600 font-bold text-lg tracking-tight">
+        大学イベント掲示板
+      </a>
+      <nav id="main-nav" class="flex items-center gap-5 text-sm"></nav>
+    </div>
+  </header>
+
+  <!-- メインコンテンツ -->
+  <main class="flex-1 flex items-center justify-center px-4 py-12">
+    <div class="w-full max-w-sm">
+      <h1 class="text-2xl font-bold text-gray-800 mb-1 text-center">新規登録</h1>
+      <p class="text-sm text-gray-500 text-center mb-8">
+        大学メール（<span class="font-medium">stu.musashino-u.ac.jp</span>）のみ登録できます
+      </p>
+
+      <!-- エラーメッセージ -->
+      <div id="error-msg" class="hidden mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-lg
+                                  text-sm text-red-700"></div>
+
+      <form id="register-form" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1" for="display-name">
+            表示名
+          </label>
+          <input id="display-name" name="display_name" type="text" autocomplete="nickname"
+                 required maxlength="50" placeholder="山田 太郎"
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
+                        focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent
+                        placeholder-gray-400 transition">
+          <p class="mt-1 text-xs text-gray-400">1〜50文字。他のユーザーに表示されます。</p>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1" for="email">
+            メールアドレス
+          </label>
+          <input id="email" name="email" type="email" autocomplete="email" required
+                 placeholder="xxx@stu.musashino-u.ac.jp"
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
+                        focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent
+                        placeholder-gray-400 transition">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1" for="password">
+            パスワード
+          </label>
+          <input id="password" name="password" type="password" autocomplete="new-password"
+                 required minlength="8" placeholder="••••••••（8文字以上）"
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
+                        focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent
+                        placeholder-gray-400 transition">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1" for="password-confirm">
+            パスワード（確認）
+          </label>
+          <input id="password-confirm" name="password_confirm" type="password"
+                 autocomplete="new-password" required placeholder="••••••••"
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
+                        focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent
+                        placeholder-gray-400 transition">
+        </div>
+
+        <button type="submit"
+                class="w-full bg-indigo-600 text-white font-medium py-2.5 rounded-lg text-sm
+                       hover:bg-indigo-700 active:bg-indigo-800 transition-colors
+                       disabled:opacity-50 disabled:cursor-not-allowed">
+          登録する
+        </button>
+      </form>
+
+      <p class="mt-5 text-center text-sm text-gray-500">
+        既にアカウントをお持ちの方は
+        <a href="/pages/login.html" class="text-indigo-600 hover:underline font-medium">ログイン</a>
+      </p>
+    </div>
+  </main>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script>
+    (async () => {
+      // ログイン済みならイベント一覧へリダイレクト
+      const user = await initAuth();
+      if (user) {
+        window.location.href = '/pages/index.html';
+        return;
+      }
+
+      document.getElementById('register-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn      = e.target.querySelector('button[type="submit"]');
+        const errorDiv = document.getElementById('error-msg');
+        errorDiv.classList.add('hidden');
+
+        const password        = document.getElementById('password').value;
+        const passwordConfirm = document.getElementById('password-confirm').value;
+
+        if (password !== passwordConfirm) {
+          errorDiv.textContent = 'パスワードが一致しません';
+          errorDiv.classList.remove('hidden');
+          return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = '登録中…';
+
+        try {
+          await api.post('/api/auth/register.php', {
+            display_name: document.getElementById('display-name').value.trim(),
+            email:        document.getElementById('email').value.trim(),
+            password,
+          });
+          window.location.href = '/pages/index.html';
+        } catch (err) {
+          errorDiv.textContent = err.message;
+          errorDiv.classList.remove('hidden');
+          btn.disabled = false;
+          btn.textContent = '登録する';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
