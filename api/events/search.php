@@ -20,12 +20,12 @@ $keyword     = isset($_GET['keyword']) ? trim($_GET['keyword']) : '';
 $from        = $_GET['from'] ?? '';
 $to          = $_GET['to']   ?? '';
 
-// 日付フォーマット検証（Y-m-d のみ許可）
+// 日付フォーマット検証（Y-m-d かつカレンダー上有効な日付のみ許可）
 $datePattern = '/^\d{4}-\d{2}-\d{2}$/';
-if ($from && !preg_match($datePattern, $from)) {
+if ($from && (!preg_match($datePattern, $from) || !strtotime($from))) {
     error_response('fromの日付形式が不正です（YYYY-MM-DD）');
 }
-if ($to && !preg_match($datePattern, $to)) {
+if ($to && (!preg_match($datePattern, $to) || !strtotime($to))) {
     error_response('toの日付形式が不正です（YYYY-MM-DD）');
 }
 
@@ -45,7 +45,8 @@ if ($categoryId !== null) {
 if ($keyword !== '') {
     // タイトルと説明文をLIKE検索（SQLインジェクション対策: プリペアドステートメント使用）
     $conditions[] = '(e.title ILIKE :keyword OR e.description ILIKE :keyword)';
-    $bindings[':keyword'] = '%' . $keyword . '%';
+    $escaped = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $keyword);
+    $bindings[':keyword'] = '%' . $escaped . '%';
 }
 
 if ($from !== '') {

@@ -47,8 +47,8 @@ async function loadCategories() {
     categoryButtons.appendChild(buildCategoryButton({ id: '', name: 'すべて' }, true));
 
     try {
-        const data = await apiGet('/api/categories/search.php');
-        data.categories.forEach(cat => {
+        const data = await apiGet('/api/categories/index.php');
+        data.forEach(cat => {
             categoryButtons.appendChild(buildCategoryButton(cat, false));
         });
     } catch (e) {
