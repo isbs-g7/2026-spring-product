@@ -1,16 +1,9 @@
-const categorySelect = document.getElementById('category');
-const eventsContainer = document.getElementById('eventsContainer');
+const eventsContainer = document.getElementById('events-container');
 const pagination = document.getElementById('pagination');
 
 let currentPage = 1;
 
 document.addEventListener('DOMContentLoaded', async () => {
-    document.getElementById('searchBtn').addEventListener('click', () => {
-        currentPage = 1;
-        loadEvents();
-    });
-
-    await loadCategories();
     await loadEvents();
 });
 
@@ -23,54 +16,12 @@ function escapeHtml(str) {
         .replace(/'/g, '&#39;');
 }
 
-async function loadCategories() {
-    try {
-        const response = await fetch('../api/categories/index.php');
-        const categories = await response.json();
-
-        categories.forEach(category => {
-            const option = document.createElement('option');
-
-            option.value = category.id;
-            option.textContent = category.name;
-
-            categorySelect.appendChild(option);
-        });
-
-    } catch (error) {
-        console.error(error);
-    }
-}
-
 async function loadEvents(page = 1) {
     try {
-        const keyword = document.getElementById('keyword').value;
-        const category = document.getElementById('category').value;
-        const from = document.getElementById('from').value;
-        const to = document.getElementById('to').value;
-
-        const params = new URLSearchParams({
-            page
-        });
-
-        if (keyword) {
-            params.append('keyword', keyword);
-        }
-
-        if (category) {
-            params.append('category_id', category);
-        }
-
-        if (from) {
-            params.append('from', from);
-        }
-
-        if (to) {
-            params.append('to', to);
-        }
+        const params = new URLSearchParams({ page });
 
         const response = await fetch(
-            `../api/events/index.php?${params.toString()}`
+            `/api/events/index.php?${params.toString()}`
         );
 
         const data = await response.json();
@@ -138,7 +89,7 @@ function renderEvents(events) {
             </p>
 
             <a
-                href="event-detail.html?id=${encodeURIComponent(event.id)}"
+                href="/pages/event-detail.html?id=${encodeURIComponent(event.id)}"
                 class="mt-4 text-blue-600 hover:underline"
             >
                 詳細を見る
@@ -163,7 +114,7 @@ function renderPagination(totalPages, current) {
 
         button.className =
             page === current
-                ? 'px-3 py-2 bg-blue-600 text-white rounded'
+                ? 'px-3 py-2 bg-indigo-600 text-white rounded'
                 : 'px-3 py-2 bg-white border rounded';
 
         button.addEventListener('click', () => {
