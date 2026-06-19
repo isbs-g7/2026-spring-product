@@ -20,7 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
  * @param {HTMLFormElement} form 
  */
 function initEventCreateForm(form) {
-    const messageContainer = document.getElementById('message-container');
     const categorySelect = document.getElementById('category_id');
 
     // 1. 起動時にカテゴリ一覧をAPIから取得してセレクトボックスを埋める
@@ -54,41 +53,19 @@ function initEventCreateForm(form) {
             return;
         }
 
+        const submitBtn = document.getElementById('submit-btn');
+        if (submitBtn) submitBtn.disabled = true;
+
         try {
-            // 送信ボタンを二重送信防止のために無効化
-            const submitBtn = document.getElementById('submit-btn');
-            if (submitBtn) submitBtn.disabled = true;
+            await api.post('../api/events/create.php', payload);
 
-            // 設計書に基づき、api/events/create.php へPOST送信
-            // ※本来は js/api.js の共通ラッパーを呼ぶのが理想ですが、未作成であるためネイティブのfetchで堅牢に実装
-            const response = await fetch('../api/events/create.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            });
-
-            const result = await response.json();
-
-            if (!response.ok) {
-                // サーバー側から返ってきたエラーメッセージを表示
-                throw new Error(result.error || 'イベントの作成に失敗しました。');
-            }
-
-            // 作成成功時
             showMessage('イベントを作成しました！一覧画面へ移動します...', 'success');
-            
-            // 1.5秒後にイベント一覧画面に遷移（設計書のSPAなし通常のHTTP遷移方針に準拠）
             setTimeout(() => {
                 window.location.href = 'index.html';
             }, 1500);
 
         } catch (error) {
             showMessage(error.message, 'error');
-            
-            // エラー時はボタンを再活性化して修正を可能にする
-            const submitBtn = document.getElementById('submit-btn');
             if (submitBtn) submitBtn.disabled = false;
         }
     });

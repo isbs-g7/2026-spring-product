@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../../includes/auth_check.php';
 require_once __DIR__ . '/../../includes/db.php';
 require_once __DIR__ . '/../../includes/response.php';
+require_once __DIR__ . '/../../includes/validation.php';
 
 // // --- テスト用ダミー設定（合流後に上の require が有効化されたら自動で無効になります） ---
 // if (!function_exists('json_response')) {
@@ -26,6 +27,8 @@ require_once __DIR__ . '/../../includes/response.php';
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     error_response('Method Not Allowed', 405);
 }
+
+validate_csrf($_SESSION);
 
 // フロントエンドからのJSON入力を取得
 $input = json_decode(file_get_contents('php://input'), true);
@@ -62,6 +65,17 @@ if (!$event_date) {
     error_response('開催日時の形式が正しくありません。', 400);
 }
 
+$end_date = null;
+if ($end_date_raw !== '') {
+    $end_date = date_create($end_date_raw);
+    if (!$end_date) {
+        error_response('終了日時の形式が正しくありません。', 400);
+    }
+    if ($end_date <= $event_date) {
+        error_response('終了日時は開催日時より後の時刻を指定してください。', 400);
+    }
+}
+
 try {
     // 💥 本番用のデータベース保存ロジック（チーム合流後に動きます）
     $pdo = getPdo();
@@ -89,7 +103,7 @@ try {
         ':location'         => $location,
         ':is_online'        => $is_online ? 1 : 0,
         ':event_date'       => $event_date->format('Y-m-d H:i:sO'),
-        ':end_date'         => $end_date_raw !== '' ? date_create($end_date_raw)->format('Y-m-d H:i:sO') : null,
+        ':end_date'         => $end_date?->format('Y-m-d H:i:sO'),
         ':organizer_id'     => $currentUserId,
         ':category_id'      => $category_id,
         ':max_participants' => $max_participants,
