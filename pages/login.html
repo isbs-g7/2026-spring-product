@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ログイン — 大学イベント掲示板</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+  <!-- ナビゲーション -->
+  <header class="bg-white shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
+      <a href="/pages/index.html" class="text-indigo-600 font-bold text-lg tracking-tight">
+        大学イベント掲示板
+      </a>
+      <nav id="main-nav" class="flex items-center gap-5 text-sm"></nav>
+    </div>
+  </header>
+
+  <!-- メインコンテンツ -->
+  <main class="flex-1 flex items-center justify-center px-4 py-12">
+    <div class="w-full max-w-sm">
+      <h1 class="text-2xl font-bold text-gray-800 mb-1 text-center">ログイン</h1>
+      <p class="text-sm text-gray-500 text-center mb-8">大学のアカウントでログインしてください</p>
+
+      <!-- エラーメッセージ -->
+      <div id="error-msg" class="hidden mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-lg
+                                  text-sm text-red-700"></div>
+
+      <form id="login-form" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1" for="email">
+            メールアドレス
+          </label>
+          <input id="email" name="email" type="email" autocomplete="email" required
+                 placeholder="xxx@stu.musashino-u.ac.jp"
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
+                        focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent
+                        placeholder-gray-400 transition">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1" for="password">
+            パスワード
+          </label>
+          <input id="password" name="password" type="password" autocomplete="current-password" required
+                 placeholder="••••••••"
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
+                        focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent
+                        placeholder-gray-400 transition">
+        </div>
+
+        <button type="submit"
+                class="w-full bg-indigo-600 text-white font-medium py-2.5 rounded-lg text-sm
+                       hover:bg-indigo-700 active:bg-indigo-800 transition-colors
+                       disabled:opacity-50 disabled:cursor-not-allowed">
+          ログイン
+        </button>
+      </form>
+
+      <p class="mt-5 text-center text-sm text-gray-500">
+        アカウントをお持ちでない方は
+        <a href="/pages/register.html" class="text-indigo-600 hover:underline font-medium">新規登録</a>
+      </p>
+    </div>
+  </main>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script>
+    (async () => {
+      // ログイン済みならイベント一覧へリダイレクト
+      const user = await initAuth();
+      if (user) {
+        window.location.href = '/pages/index.html';
+        return;
+      }
+
+      document.getElementById('login-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn      = e.target.querySelector('button[type="submit"]');
+        const errorDiv = document.getElementById('error-msg');
+        errorDiv.classList.add('hidden');
+        btn.disabled = true;
+        btn.textContent = 'ログイン中…';
+
+        try {
+          await api.post('/api/auth/login.php', {
+            email:    document.getElementById('email').value.trim(),
+            password: document.getElementById('password').value,
+          });
+          window.location.href = '/pages/index.html';
+        } catch (err) {
+          errorDiv.textContent = err.message;
+          errorDiv.classList.remove('hidden');
+          btn.disabled = false;
+          btn.textContent = 'ログイン';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
