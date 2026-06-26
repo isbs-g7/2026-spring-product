@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>イベント一覧 — 大学生活イベント掲示板</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen">
+
+    <!-- ヘッダー（auth.jsで制御） -->
+    <header id="site-header" class="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <div class="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
+            <a href="/pages/search.html" class="font-medium text-indigo-600 hover:text-indigo-800">
+                🎓 大学イベント掲示板
+            </a>
+            <nav id="nav-area" class="flex items-center gap-3 text-sm">
+                <!-- auth.js が挿入 -->
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 py-8">
+
+        <h1 class="text-xl font-medium text-gray-800 mb-6">イベントを探す</h1>
+
+        <!-- 検索フォーム -->
+        <section aria-label="絞り込み検索" class="bg-white border border-gray-200 rounded-xl p-5 mb-6">
+
+            <!-- カテゴリから探す -->
+            <div class="mb-5">
+                <p class="search-section-label">
+                    <i class="ti ti-category" aria-hidden="true"></i>カテゴリから探す
+                </p>
+                <div id="category-buttons" class="flex flex-wrap gap-2" role="group" aria-label="カテゴリ選択">
+                    <!-- events.js が動的に挿入 -->
+                </div>
+            </div>
+
+            <hr class="border-gray-100 mb-5">
+
+            <!-- キーワードから探す -->
+            <div>
+                <p class="search-section-label">
+                    <i class="ti ti-search" aria-hidden="true"></i>キーワードから探す
+                </p>
+                <div class="flex gap-2">
+                    <input
+                        id="input-keyword"
+                        type="search"
+                        placeholder="イベント名・内容で検索..."
+                        class="flex-1 px-4 py-2 text-sm border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-300"
+                        aria-label="キーワード"
+                    >
+                    <button
+                        id="btn-search"
+                        class="search-btn"
+                        aria-label="検索"
+                    >
+                        検索
+                    </button>
+                </div>
+            </div>
+
+            <!-- 日付フィルター（折りたたみ） -->
+            <div class="mt-4">
+                <button
+                    id="btn-toggle-date"
+                    class="text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1 transition-colors"
+                    aria-expanded="false"
+                    aria-controls="date-filter"
+                >
+                    <i class="ti ti-calendar" aria-hidden="true"></i>
+                    日付で絞り込む
+                    <i class="ti ti-chevron-down text-xs transition-transform" id="icon-chevron" aria-hidden="true"></i>
+                </button>
+                <div id="date-filter" class="hidden mt-3 grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="input-from" class="block text-xs text-gray-500 mb-1">開始日</label>
+                        <input
+                            id="input-from"
+                            type="date"
+                            class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300"
+                        >
+                    </div>
+                    <div>
+                        <label for="input-to" class="block text-xs text-gray-500 mb-1">終了日</label>
+                        <input
+                            id="input-to"
+                            type="date"
+                            class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300"
+                        >
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- 件数 -->
+        <p id="result-count" class="text-sm text-gray-500 mb-4" aria-live="polite"></p>
+
+        <!-- イベント一覧グリッド -->
+        <div
+            id="events-grid"
+            class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8"
+            aria-label="イベント一覧"
+        >
+            <!-- events.js が動的に挿入 -->
+        </div>
+
+        <!-- ページネーション -->
+        <nav id="pagination" class="flex justify-center items-center gap-2" aria-label="ページネーション">
+            <!-- events.js が動的に挿入 -->
+        </nav>
+
+    </main>
+
+    <!-- イベント作成ボタン（ログイン時のみ表示 — auth.jsで制御） -->
+    <a id="btn-create-event"
+       href="/pages/event-new.html"
+       class="hidden fixed bottom-6 right-6 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-3 rounded-full shadow-lg transition-colors"
+       aria-label="イベントを作成する"
+    >
+        <i class="ti ti-plus" aria-hidden="true"></i> イベント作成
+    </a>
+
+    <script src="/js/api.js"></script>
+    <script type="module" src="/js/auth.js"></script>
+    <script type="module" src="/js/search.js"></script>
+</body>
+</html>
