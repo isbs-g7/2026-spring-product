@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>イベント編集 - 大学生活イベント掲示板</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen">
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="index.html" class="text-xl font-bold text-indigo-600">大学生活イベント掲示板</a>
+            <nav class="space-x-4">
+                <a href="mypage.html" class="text-sm text-gray-600 hover:text-indigo-600">マイページ</a>
+                <a href="index.html" class="text-sm text-gray-600 hover:text-indigo-600">イベント一覧</a>
+            </nav>
+        </div>
+    </header>
+    <main class="max-w-2xl mx-auto px-4 py-8">
+        <div class="bg-white shadow-sm rounded-lg p-6 border border-gray-200">
+            <h1 class="text-2xl font-bold text-gray-900 mb-6 pb-2 border-b border-gray-100">イベント編集</h1>
+            
+            <div id="message-container" class="hidden mb-4 p-4 rounded-md text-sm"></div>
+            
+            <form id="event-edit-form" class="space-y-5">
+                <div>
+                    <label for="title" class="block text-sm font-medium text-gray-700 mb-1">イベント名</label>
+                    <input type="text" id="title" name="title" required maxlength="100" class="w-full rounded-md border-gray-300 shadow-sm border p-2 focus:border-indigo-500 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-1">説明</label>
+                    <textarea id="description" name="description" rows="4" class="w-full rounded-md border-gray-300 shadow-sm border p-2 focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+                </div>
+                <div>
+                    <label for="location" class="block text-sm font-medium text-gray-700 mb-1">場所</label>
+                    <input type="text" id="location" name="location" class="w-full rounded-md border-gray-300 shadow-sm border p-2 focus:border-indigo-500 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label for="event_date" class="block text-sm font-medium text-gray-700 mb-1">日付</label>
+                    <input type="date" id="event_date" name="event_date" class="w-full rounded-md border-gray-300 shadow-sm border p-2 focus:border-indigo-500 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label for="status" class="block text-sm font-medium text-gray-700 mb-1">ステータス</label>
+                    <select id="status" name="status" class="w-full rounded-md border-gray-300 shadow-sm border p-2 focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="募集中">募集中</option>
+                        <option value="満員">満員</option>
+                        <option value="終了">終了</option>
+                    </select>
+                </div>
+                <div class="flex gap-4">
+                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition">更新</button>
+                    <button type="button" id="delete-btn" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">削除</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        // 本番環境のAPIエンドポイントに合わせて変更してください
+        const API_BASE_URL = 'https://api.example.com/events'; 
+
+        // 1. URLからイベントIDを取得 (例: event-edit.html?id=123)
+        const urlParams = new URLSearchParams(window.location.search);
+        const eventId = urlParams.get('id');
+
+        const messageContainer = document.getElementById('message-container');
+        const editForm = document.getElementById('event-edit-form');
+        const deleteBtn = document.getElementById('delete-btn');
+
+        // 通知メッセージを表示する関数
+        function showMessage(text, isSuccess = true) {
+            messageContainer.textContent = text;
+            messageContainer.className = isSuccess 
+                ? "mb-4 p-4 rounded-md text-sm bg-green-50 text-green-800 border border-green-200" 
+                : "mb-4 p-4 rounded-md text-sm bg-red-50 text-red-800 border border-red-200";
+            messageContainer.classList.remove('hidden');
+        }
+
+        // 2. 初期表示：該当するイベントのデータをAPIから取得してフォームにセット
+        async function fetchEventData() {
+            if (!eventId) {
+                showMessage('イベントIDが指定されていません。一覧からやり直してください。', false);
+                editForm.querySelectorAll('input, textarea, button, select').forEach(el => el.disabled = true);
+                return;
+            }
+
+            try {
+                // 本番環境では実際のAPIから取得: await fetch(`${API_BASE_URL}/${eventId}`)
+                // ここではダミーとしてモックデータをセット（動作確認用）
+                const response = {
+                    ok: true,
+                    json: async () => ({
+                        title: "新入生歓迎BBQ大会",
+                        description: "サークル主催の新歓バーベキューです！未経験者大歓迎！",
+                        location: "大学裏の河川敷緑地公園",
+                        event_date: "2026-05-10",
+                        status: "募集中"
+                    })
+                };
+
+                if (!response.ok) throw new Error('データの取得に失敗しました');
+                const event = await response.json();
+
+                // フォームに値を代入
+                document.getElementById('title').value = event.title || '';
+                document.getElementById('description').value = event.description || '';
+                document.getElementById('location').value = event.location || '';
+                document.getElementById('event_date').value = event.event_date || '';
+                document.getElementById('status').value = event.status || '募集中';
+
+            } catch (error) {
+                showMessage(error.message, false);
+            }
+        }
+
+        // 3. 更新処理 (送信)
+        editForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = {
+                title: document.getElementById('title').value,
+                description: document.getElementById('description').value,
+                location: document.getElementById('location').value,
+                event_date: document.getElementById('event_date').value,
+                status: document.getElementById('status').value
+            };
+
+            try {
+                /* 本番環境用の非同期通信コード
+                const response = await fetch(`${API_BASE_URL}/${eventId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                if (!response.ok) throw new Error('更新に失敗しました');
+                */
+
+                showMessage('イベント情報を正常に更新しました！');
+                
+                // 2秒後に一覧画面へ遷移
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+
+            } catch (error) {
+                showMessage(error.message, false);
+            }
+        });
+
+        // 4. 削除処理
+        deleteBtn.addEventListener('click', async () => {
+            if (!confirm('このイベントを削除してもよろしいですか？この操作は取り消せません。')) {
+                return;
+            }
+
+            try {
+                /* 本番環境用の非同期通信コード
+                const response = await fetch(`${API_BASE_URL}/${eventId}`, {
+                    method: 'DELETE'
+                });
+                if (!response.ok) throw new Error('削除に失敗しました');
+                */
+
+                showMessage('イベントを削除しました。');
+
+                // 2秒後に一覧画面へ遷移
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+
+            } catch (error) {
+                showMessage(error.message, false);
+            }
+        });
+
+        // 画面読み込み時に初期データを取得
+        window.addEventListener('DOMContentLoaded', fetchEventData);
+    </script>
+</body>
+</html>
