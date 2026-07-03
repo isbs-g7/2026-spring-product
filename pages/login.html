@@ -12,7 +12,7 @@
   <!-- ナビゲーション -->
   <header class="bg-white shadow-sm">
     <div class="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
-      <a href="/pages/index.html" class="text-indigo-600 font-bold text-lg tracking-tight">
+      <a href="../pages/index.html" class="text-indigo-600 font-bold text-lg tracking-tight">
         大学イベント掲示板
       </a>
       <nav id="main-nav" class="flex items-center gap-5 text-sm"></nav>
@@ -62,7 +62,7 @@
 
       <p class="mt-5 text-center text-sm text-gray-500">
         アカウントをお持ちでない方は
-        <a href="/pages/register.html" class="text-indigo-600 hover:underline font-medium">新規登録</a>
+        <a href="../pages/register.html" class="text-indigo-600 hover:underline font-medium">新規登録</a>
       </p>
     </div>
   </main>
@@ -91,7 +91,7 @@
             email:    document.getElementById('email').value.trim(),
             password: document.getElementById('password').value,
           });
-          window.location.href = '/pages/index.html';
+          window.location.href = '../pages/index.html';
         } catch (err) {
           errorDiv.textContent = err.message;
           errorDiv.classList.remove('hidden');
