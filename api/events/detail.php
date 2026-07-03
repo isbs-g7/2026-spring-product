@@ -7,6 +7,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     error_response('Method Not Allowed', 405);
 }
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+$currentUserId = $_SESSION['user_id'] ?? null;
+
 $pdo = getPdo();
 
 $eventId = $_GET['id'] ?? '';
@@ -31,7 +36,12 @@ $sql = "
         c.name AS category_name,
         c.color AS category_color,
         u.display_name AS organizer_name,
-        COUNT(p.id) FILTER (WHERE p.status = 'confirmed') AS participant_count
+        COUNT(p.id) FILTER (WHERE p.status = 'confirmed') AS participant_count,
+        EXISTS (
+            SELECT 1 FROM event_participations pu
+            WHERE pu.event_id = e.id AND pu.user_id = :current_user_id AND pu.status = 'confirmed'
+        ) AS is_participating,
+        (e.organizer_id = :current_user_id_2) AS is_organizer
     FROM events e
     INNER JOIN categories c ON c.id = e.category_id
     INNER JOIN users u      ON u.id = e.organizer_id
@@ -42,6 +52,8 @@ $sql = "
 
 $stmt = $pdo->prepare($sql);
 $stmt->bindValue(':id', $eventId);
+$stmt->bindValue(':current_user_id',   $currentUserId, $currentUserId === null ? PDO::PARAM_NULL : PDO::PARAM_STR);
+$stmt->bindValue(':current_user_id_2', $currentUserId, $currentUserId === null ? PDO::PARAM_NULL : PDO::PARAM_STR);
 $stmt->execute();
 
 $event = $stmt->fetch();
@@ -55,5 +67,7 @@ $event['max_participants']  = $event['max_participants'] !== null
                                 ? (int)$event['max_participants']
                                 : null;
 $event['participant_count'] = (int)$event['participant_count'];
+$event['is_participating']  = (bool)$event['is_participating'];
+$event['is_organizer']      = (bool)$event['is_organizer'];
 
 json_response(['event' => $event]);
