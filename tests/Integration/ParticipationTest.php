@@ -128,6 +128,18 @@ class ParticipationTest extends TestCase
         cancel_participation(self::$pdo, $eventId, $this->participantId);
     }
 
+    public function test_cancel_fails_for_soft_deleted_event(): void
+    {
+        $eventId = $this->createEvent(null);
+        join_event(self::$pdo, $eventId, $this->participantId);
+
+        self::$pdo->prepare('UPDATE events SET deleted_at = NOW() WHERE id = ?')
+            ->execute([$eventId]);
+
+        $this->expectExceptionMessage('イベントが見つかりません');
+        cancel_participation(self::$pdo, $eventId, $this->participantId);
+    }
+
     public function test_list_participants_forbidden_for_non_organizer(): void
     {
         $eventId = $this->createEvent(null);

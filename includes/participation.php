@@ -72,11 +72,13 @@ function cancel_participation(PDO $pdo, string $eventId, string $userId): void
 {
     $pdo->beginTransaction();
     try {
-        $stmt = $pdo->prepare('SELECT event_date FROM events WHERE id = ? FOR UPDATE');
+        $stmt = $pdo->prepare(
+            'SELECT event_date, deleted_at FROM events WHERE id = ? FOR UPDATE'
+        );
         $stmt->execute([$eventId]);
         $event = $stmt->fetch();
 
-        if (!$event) {
+        if (!$event || $event['deleted_at'] !== null) {
             throw new Exception('イベントが見つかりません', 404);
         }
 
