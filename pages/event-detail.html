@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>イベント詳細 — 大学生活イベント掲示板</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen">
+
+    <!-- ヘッダー（auth.jsで制御） -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <div class="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
+            <a href="/pages/index.html" class="text-indigo-600 font-bold text-lg tracking-tight">
+                大学イベント掲示板
+            </a>
+            <nav id="main-nav" class="flex items-center gap-5 text-sm"></nav>
+        </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 py-8">
+
+        <a href="/pages/search.html" class="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-indigo-600 mb-6 transition-colors">
+            <i class="ti ti-chevron-left" aria-hidden="true"></i>イベント一覧に戻る
+        </a>
+
+        <!-- ローディング -->
+        <div id="detail-loading" class="text-center py-16">
+            <p class="text-gray-500 text-sm">読み込み中...</p>
+        </div>
+
+        <!-- エラー -->
+        <div id="detail-error" class="hidden px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700"></div>
+
+        <!-- イベント詳細 -->
+        <article id="detail-content" class="hidden bg-white border border-gray-200 rounded-xl overflow-hidden">
+
+            <img id="detail-image" src="" alt="" class="hidden w-full h-64 object-cover">
+
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-3">
+                    <span id="detail-category" class="category-badge"></span>
+                    <span id="detail-status-badge"></span>
+                </div>
+
+                <h1 id="detail-title" class="text-2xl font-bold text-gray-900 mb-4"></h1>
+
+                <dl class="space-y-3 text-sm mb-6">
+                    <div class="flex gap-3">
+                        <dt class="w-28 text-gray-500 shrink-0 flex items-center gap-1.5">
+                            <i class="ti ti-calendar" aria-hidden="true"></i>開催日時
+                        </dt>
+                        <dd id="detail-date" class="text-gray-800"></dd>
+                    </div>
+                    <div class="flex gap-3">
+                        <dt class="w-28 text-gray-500 shrink-0 flex items-center gap-1.5">
+                            <i id="detail-location-icon" class="ti ti-map-pin" aria-hidden="true"></i>開催場所
+                        </dt>
+                        <dd id="detail-location" class="text-gray-800"></dd>
+                    </div>
+                    <div class="flex gap-3">
+                        <dt class="w-28 text-gray-500 shrink-0 flex items-center gap-1.5">
+                            <i class="ti ti-users" aria-hidden="true"></i>参加状況
+                        </dt>
+                        <dd id="detail-participants" class="text-gray-800"></dd>
+                    </div>
+                    <div class="flex gap-3">
+                        <dt class="w-28 text-gray-500 shrink-0 flex items-center gap-1.5">
+                            <i class="ti ti-user" aria-hidden="true"></i>主催者
+                        </dt>
+                        <dd id="detail-organizer" class="text-gray-800"></dd>
+                    </div>
+                </dl>
+
+                <hr class="border-gray-100 mb-6">
+
+                <h2 class="text-sm font-semibold text-gray-700 mb-2">イベント詳細</h2>
+                <p id="detail-description" class="text-gray-700 text-sm whitespace-pre-wrap leading-relaxed"></p>
+            </div>
+        </article>
+
+    </main>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script type="module" src="/js/event-detail.js"></script>
+</body>
+</html>
