@@ -60,14 +60,16 @@ if (mb_strlen($location) > 200) {
     error_response('場所は200文字以内で入力してください。', 400);
 }
 
-$event_date = date_create($event_date_raw);
+$jst = new DateTimeZone('Asia/Tokyo');
+
+$event_date = date_create($event_date_raw, $jst);
 if (!$event_date) {
     error_response('開催日時の形式が正しくありません。', 400);
 }
 
 $end_date = null;
 if ($end_date_raw !== '') {
-    $end_date = date_create($end_date_raw);
+    $end_date = date_create($end_date_raw, $jst);
     if (!$end_date) {
         error_response('終了日時の形式が正しくありません。', 400);
     }
