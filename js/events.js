@@ -2,15 +2,19 @@
  * js/events.js
  * イベント関連のフロントエンドロジック（一覧表示・作成フォーム）を担当するスクリプト。
  */
+import { renderParticipationButton, bindParticipationActions } from './participations.js';
 
 const eventsContainer = document.getElementById('events-container');
 const pagination = document.getElementById('pagination');
 
 let currentPage = 1;
+let currentUser = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
     if (eventsContainer) {
+        currentUser = await initAuth();
         await loadEvents();
+        bindParticipationActions(eventsContainer, () => loadEvents(currentPage));
     }
 
     const createForm = document.getElementById('event-create-form');
@@ -95,19 +99,22 @@ function renderEvents(events) {
 
             <p class="text-sm text-gray-600 mb-3">
                 定員:
-                ${event.max_participants != null ? escapeHtml(event.max_participants) : '制限なし'}
+                ${event.max_participants != null ? escapeHtml(event.max_participants) + `（${event.participant_count}名参加中）` : '制限なし'}
             </p>
 
             <p class="text-gray-700 flex-grow">
                 ${escapeHtml(description)}
             </p>
 
-            <a
-                href="/pages/event-detail.html?id=${encodeURIComponent(event.id)}"
-                class="mt-4 text-blue-600 hover:underline"
-            >
-                詳細を見る
-            </a>
+            <div class="mt-4 flex items-center justify-between">
+                <a
+                    href="/pages/event-detail.html?id=${encodeURIComponent(event.id)}"
+                    class="text-blue-600 hover:underline"
+                >
+                    詳細を見る
+                </a>
+                ${renderParticipationButton(event, currentUser)}
+            </div>
         `;
 
         eventsContainer.appendChild(card);
