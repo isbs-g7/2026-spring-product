@@ -2,6 +2,7 @@
  * event-render.js — カード描画・ページネーション・ユーティリティ
  * events.js から分割。描画ロジックのみを担当する。
  */
+import { renderParticipationButton } from './participations.js';
 
 // ---- カード描画 ----
 
@@ -15,18 +16,18 @@ export function renderResultCount(el, total) {
 /**
  * イベントカード一覧を描画
  */
-export function renderEvents(el, events) {
+export function renderEvents(el, events, currentUser) {
     if (events.length === 0) {
         el.innerHTML = '<p class="no-results">条件に一致するイベントはありませんでした。</p>';
         return;
     }
-    el.innerHTML = events.map(buildEventCard).join('');
+    el.innerHTML = events.map(event => buildEventCard(event, currentUser)).join('');
 }
 
 /**
  * イベントカードのHTML生成
  */
-function buildEventCard(event) {
+function buildEventCard(event, currentUser) {
     const statusBadge     = buildStatusBadge(event);
     const dateStr         = formatDate(event.event_date);
     const location        = event.is_online ? 'オンライン' : event.location;
@@ -34,6 +35,7 @@ function buildEventCard(event) {
     const participantText = event.max_participants !== null
         ? `${event.participant_count} / ${event.max_participants}名`
         : `${event.participant_count}名参加中`;
+    const participationBtn = renderParticipationButton(event, currentUser);
 
     return `
         <a href="/pages/event-detail.html?id=${event.id}" class="event-card">
@@ -55,6 +57,7 @@ function buildEventCard(event) {
                 </span>
                 ${statusBadge}
             </div>
+            ${participationBtn ? `<div class="mt-3">${participationBtn}</div>` : ''}
         </a>
     `;
 }

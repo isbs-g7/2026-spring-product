@@ -9,6 +9,7 @@ import {
     showLoading,
     showError,
 } from './event-render.js';
+import { bindParticipationActions } from './participations.js';
 
 // --- 状態管理 ---
 const state = {
@@ -18,6 +19,8 @@ const state = {
     from:       '',
     to:         '',
 };
+
+let currentUser = null;
 
 // --- DOM参照 ---
 const inputKeyword    = document.getElementById('input-keyword');
@@ -34,9 +37,11 @@ const pagination      = document.getElementById('pagination');
 
 // --- 初期化 ---
 document.addEventListener('DOMContentLoaded', async () => {
+    currentUser = await initAuth();
     await loadCategories();
     await fetchAndRender();
     bindSearchEvents();
+    bindParticipationActions(eventsGrid, fetchAndRender);
 });
 
 /**
@@ -138,7 +143,7 @@ async function fetchAndRender() {
         });
 
         renderResultCount(resultCount, data.total);
-        renderEvents(eventsGrid, data.events);
+        renderEvents(eventsGrid, data.events, currentUser);
         renderPagination(pagination, data.total, data.page, data.per_page, (page) => {
             state.page = page;
             fetchAndRender();
