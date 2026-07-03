@@ -17,3 +17,6 @@ config.php
 
 # PHPパッケージ
 vendor/
+
+# エージェント作業用ドキュメント（設計スペック等）
+docs/superpowers/
