@@ -159,13 +159,14 @@ function initEventCreateForm(form) {
         showMessage('', 'clear');
 
         const formData = new FormData(form);
+        const onlineInput = form.elements.namedItem('is_online');
         const payload = {
             title: formData.get('title'),
             category_id: parseInt(formData.get('category_id'), 10),
             event_date: formData.get('event_date'),
             end_date: formData.get('end_date') || null,
             location: formData.get('location'),
-            is_online: form.is_online.checked,
+            is_online: onlineInput instanceof HTMLInputElement ? onlineInput.checked : false,
             max_participants: formData.get('max_participants') ? parseInt(formData.get('max_participants'), 10) : null,
             image_url: formData.get('image_url') || null,
             description: formData.get('description')
